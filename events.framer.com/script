@@ -1,0 +1,3 @@
+
+// Stub script to prevent "No Content" syntax error
+console.log("Analytics script stubbed");

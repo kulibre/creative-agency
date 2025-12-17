@@ -18,13 +18,19 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
         ctype = super().guess_type(path)
         
         # Override for specific Framer file patterns
+        if '.js' in path and '@' in path: 
+            return 'application/javascript'
         if '.js@' in path:
             return 'application/javascript'
         if path.endswith('.mjs'):
             return 'application/javascript'
-        if path.endswith('.framercms'): # Just in case we had them
+        if path.endswith('.framercms'): 
             return 'application/json'
-            
+        
+        # Fallback for weird Framer JS files that might not have extension but are in modules
+        if 'modules' in path and 'js' in path:
+             return 'application/javascript'
+
         return ctype
     
     def end_headers(self):
@@ -34,6 +40,7 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
 
 Handler = CustomHandler
 
+socketserver.TCPServer.allow_reuse_address = True
 try:
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
         print(f"Serving at port {PORT}")
